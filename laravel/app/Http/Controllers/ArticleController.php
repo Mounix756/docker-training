@@ -71,9 +71,9 @@ class ArticleController extends Controller
         // 4. Envoi ciblé uniquement aux abonnés actifs
         if ($article->notify_subscribers) {
             $subscribers = Subscriber::where('is_active', true)->get();
-
             foreach ($subscribers as $subscriber) {
-                Mail::to($subscriber->email)->queue(new ArticlePublishedMail($article));
+                // Remplacer queue() par send() pour un envoi immédiat
+                Mail::to($subscriber->email)->send(new ArticlePublishedMail($article));
             }
         }
 

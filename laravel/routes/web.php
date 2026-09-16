@@ -31,3 +31,8 @@ Route::post('/subscribe', function (Illuminate\Http\Request $request) {
 
     return back()->with('success', 'Félicitations ! Vous êtes désormais inscrit à la newsletter.');
 })->name('subscribers.store');
+
+Route::get('/subscribers', function () {
+    $subscribers = Subscriber::latest()->paginate(15);
+    return view('subscribers.index', compact('subscribers'));
+})->name('subscribers.index');

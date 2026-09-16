@@ -112,11 +112,13 @@
     </section>
 
     <!-- Pied de page -->
+    <!-- Pied de page -->
     <footer class="bg-slate-950 text-slate-500 py-10 border-t border-slate-900 text-xs">
         <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>&copy; {{ date('Y') }} DevBlog. Édition technique sous licence MIT.</p>
             <div class="flex space-x-6">
                 <a href="{{ route('articles.index') }}" class="hover:text-slate-300 transition">Accueil</a>
+                <a href="{{ route('subscribers.index') }}" class="hover:text-slate-300 transition">Abonnés ({{ \App\Models\Subscriber::count() }})</a>
                 <a href="#newsletter" class="hover:text-slate-300 transition">Newsletter</a>
             </div>
         </div>
