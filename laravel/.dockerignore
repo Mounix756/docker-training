@@ -1,0 +1,27 @@
+# Dépendances locales (installées dans le conteneur via composer)
+/vendor
+/node_modules
+
+# Fichiers d'environnement et secrets
+.env
+.env.*
+!.env.example
+
+# Git et éditeurs
+.git
+.gitignore
+.idea
+.vscode
+
+# Storage et logs
+storage/logs/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/public/*
+!storage/framework/.gitignore
+
+# Tests et documentation
+tests/
+README.md
+Dockerfile
+.dockerignore

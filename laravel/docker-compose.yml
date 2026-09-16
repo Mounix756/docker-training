@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    volumes:
+      - .:/var/www
+    env_file:
+      - .env
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-blog_db}
+      POSTGRES_USER: ${DB_USERNAME:-postgres_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secretpassword}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit_mail
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  pgdata:

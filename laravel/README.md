@@ -1,58 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Application Blog Laravel (Docker & PostgreSQL)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ce dossier contient le code source de l'application de blog développée avec Laravel, conteneurisée à l'aide de Docker et orchestrée via Docker Compose.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fonctionnalités Principales
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Gestion des Articles (CRUD)** : Création, consultation et suppression d'articles de blog.
+- **Galerie d'Images** : Prise en charge du téléversement d'images multiples (limité à 4 images par article).
+- **Moteur de Recherche Avancé** : Recherche textuelle rapide basée sur les fonctions natives PostgreSQL (`to_tsvector` et `to_tsquery`) couvrant le titre, l'auteur et le contenu.
+- **Notification des Abonnés** : Envoi ciblé d'e-mails aux abonnés actifs (`is_active = true`) lors de la publication d'un article.
+- **Environnement de Test SMTP** : Capture et inspection des e-mails envoyés en développement via le service Mailpit.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Architecture Technique
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Framework PHP** : Laravel 10.x (PHP 8.2 FPM)
+- **Base de Données** : PostgreSQL 15 (Alpine)
+- **Serveur de Mail Dev** : Mailpit
+- **Conteneurisation** : Docker & Docker Compose
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Prérequis
 
-## Agentic Development
+- Docker Engine (version 20.10 ou supérieure)
+- Docker Compose (version 2.0 ou supérieure)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+## Installation et Démarrage Rapide
+
+### 1. Configuration de l'environnement
+
+S'assurer que le fichier `.env` est présent à la racine du dossier `laravel/`. Si ce n'est pas le cas, copier le fichier d'exemple :
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+cp .env.example .env
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Vérifier la configuration des accès aux services conteneurisés dans le fichier `.env` :
 
-## Contributing
+```ini
+DB_CONNECTION=pgsql
+DB_HOST=db
+DB_PORT=5432
+DB_DATABASE=blog_db
+DB_USERNAME=postgres_user
+DB_PASSWORD=secretpassword
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="newsletter@blog.test"
+MAIL_FROM_NAME="${APP_NAME}"
+```
 
-## Code of Conduct
+### 2. Démarrage des services Docker
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Lancer la construction et l'exécution des conteneurs en arrière-plan :
 
-## Security Vulnerabilities
+```bash
+docker compose up -d --build
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Le script d'entrée (`docker-entrypoint.sh`) s'exécute automatiquement au démarrage pour :
+1. Attendre la disponibilité du serveur PostgreSQL.
+2. Générer la clé d'application (`APP_KEY`) si elle est absente.
+3. Exécuter les migrations de base de données.
 
-## License
+### 3. Création du lien symbolique de stockage
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Pour rendre les images téléversées accessibles publiquement sur le Web :
+
+```bash
+docker compose exec app php artisan storage:link
+```
+
+---
+
+## Services et Ports
+
+| Service | Adresse URL / Port | Description |
+| :--- | :--- | :--- |
+| **Application Laravel** | `http://localhost:8000` | Interface utilisateur du blog |
+| **Mailpit (Web UI)** | `http://localhost:8025` | Client Web d'inspection des e-mails |
+| **PostgreSQL** | `localhost:5432` | Instance de base de données |
+
+---
+
+## Commandes de Maintenance
+
+### Exécution des commandes Artisan
+
+Toute commande Laravel doit être exécutée à l'intérieur du conteneur `app` :
+
+```bash
+# Exécuter les migrations manuellement
+docker compose exec app php artisan migrate
+
+# Réinitialiser la base de données
+docker compose exec app php artisan migrate:fresh
+
+# Lister les routes de l'application
+docker compose exec app php artisan route:list
+```
+
+### Gestion des Conteneurs
+
+```bash
+# Arrêter les services sans supprimer les données
+docker compose stop
+
+# Arrêter et supprimer les conteneurs et les réseaux
+docker compose down
+
+# Consulter les journaux d'exécution (logs)
+docker compose logs -f app
+```
