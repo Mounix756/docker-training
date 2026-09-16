@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('author'); // <-- Assurez-vous que cette ligne est présente
             $table->text('content');
             $table->boolean('notify_subscribers')->default(false);
             $table->timestamps();
