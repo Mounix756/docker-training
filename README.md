@@ -33,4 +33,3 @@ Bienvenue dans le dépôt **Docker Training**. Ce projet regroupe différentes e
 ```bash
 cd laravel
 docker compose up -d --build
-docker compose exec app php artisan migrate
