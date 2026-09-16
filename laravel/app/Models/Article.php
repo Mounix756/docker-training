@@ -17,7 +17,7 @@ class Article extends Model
     public function scopeSearch($query, $term)
     {
         return $query->whereRaw(
-            "to_tsvector('french', title || ' ' || content) @@ plainto_tsquery('french', ?)",
+            "to_tsvector('french', title || ' ' || author || ' ' || content) @@ plainto_tsquery('french', ?)",
             [$term]
         );
     }
