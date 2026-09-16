@@ -16,7 +16,7 @@ Ce dossier contient le code source de l'application de blog développée avec La
 
 ## Architecture Technique
 
-- **Framework PHP** : Laravel 10.x (PHP 8.2 FPM)
+- **Framework PHP** : Laravel 10.x (PHP 8.4 FPM)
 - **Base de Données** : PostgreSQL 15 (Alpine)
 - **Serveur de Mail Dev** : Mailpit
 - **Conteneurisation** : Docker & Docker Compose
